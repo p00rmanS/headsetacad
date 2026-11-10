@@ -8,4 +8,3 @@ Static site, no build step. Open `index.html` or serve the folder (for example `
 - **Voice:** browser speech (read aloud everywhere, speaking in Chrome/Edge).
 - **Live AI calls:** paste your own Anthropic API key in Settings. It is stored only in your browser. Never commit a key.
 - **Progress:** saved in your browser. Export and import a backup in Settings.
-- `legacy/` holds the original single-file version.
