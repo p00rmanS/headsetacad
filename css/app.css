@@ -227,3 +227,5 @@ main{max-width:1180px;margin:0 auto;padding-block:28px 64px;padding-left:max(16p
   .item{grid-template-columns:32px 1fr}
   .item .go{display:none}
 }
+
+@media print{.top,.btn,.nav,#rName{display:none!important}body{background:#fff;color:#000}.continue{border:1px solid #999}}

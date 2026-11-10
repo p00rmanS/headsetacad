@@ -26,8 +26,8 @@ window.WEEKS=[
  {span:"W9–15",phase:"Phase 6: Bilingual Spanish (parallel, 2 days a week)",title:"Spanish line: technical support",topics:"Wi-Fi and router, computers and phones, email and scams, diagnostics, outages and business customers.",lessons:["e2","e9","e10","e11","e12","e13"]},
  {span:"W16–22",phase:"Phase 6: Bilingual Spanish (parallel, 2 days a week)",title:"Spanish line: customer service",topics:"Billing and payments, retail, bank safety, insurance, cancellations, empathy and de-escalation.",lessons:["e3","e14","e15","e16","e17","e4","e18"]},
  {span:"W23–24",phase:"Phase 6: Bilingual Spanish (parallel, 2 days a week)",title:"Spanish line: final exam",topics:"Mixed Spanish call review and exam.",lessons:["e19"]},
- {w:23,phase:"Phase 7: Readiness",title:"Mixed calls under time pressure",topics:"Random accounts and scenarios.",lessons:[]},
- {w:24,phase:"Phase 7: Readiness",title:"Mock QA evaluation",topics:"Full 9-criterion form, fix weak spots.",lessons:[]},
- {w:25,phase:"Phase 7: Readiness",title:"Final exam",topics:"Written test plus 6 scored calls: 2 tech, 2 CSR, 2 Spanish.",lessons:[]},
- {w:26,phase:"Phase 7: Readiness",title:"Interview prep and readiness report",topics:"Talking points and your readiness summary.",lessons:[]}
+ {w:23,phase:"Phase 7: Readiness",title:"Mixed calls under time pressure",topics:"Switching accounts, two problems in one call, pace without rushing. Use the Drill page.",lessons:["r1","r2","r3","r4"]},
+ {w:24,phase:"Phase 7: Readiness",title:"Mock QA evaluation",topics:"How QA calibrates, self-review, fixing weak criteria, a full mock week.",lessons:["r5","r6","r7","r8"]},
+ {w:25,phase:"Phase 7: Readiness",title:"Final exam",topics:"Written exam on the Exam page, six scored calls, the auto-fail checklist.",lessons:["r9","r10"]},
+ {w:26,phase:"Phase 7: Readiness",title:"Interview prep and readiness report",topics:"STAR stories, model answers, first 30 days, the Readiness page.",lessons:["r11","r12","r13","r14"]}
 ];

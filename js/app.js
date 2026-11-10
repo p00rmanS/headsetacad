@@ -8,6 +8,8 @@ const TRACKS = [
   {id:"es", code:"BIL-ES", name:"Bilingual Spanish", blurb:"Run the same calls in Spanish: greetings, verification, tech and billing vocabulary, empathy."}
 ];
 
+if(window.EXTRA_TRACKS) TRACKS.push(...window.EXTRA_TRACKS);
+
 const ACCOUNTS = {
   "Northwave Fiber":"Telecom / ISP",
   "Brightdesk IT":"Software & devices helpdesk",
@@ -913,7 +915,7 @@ function refreshListen(){}
 /* ============================== VIEWS ============================== */
 function nav(active){
   const due=dueCards().length;
-  const items=[["home","Home"],["plan","Plan"],...TRACKS.map(t=>["track-"+t.id,t.name.replace("Tech Support ","TSR ")]),["review","Review"+(due?" ("+due+")":"")],["qa","QA Scorecard"],["settings","Settings"]];
+  const items=[["home","Home"],["plan","Plan"],...TRACKS.map(t=>["track-"+t.id,t.name.replace("Tech Support ","TSR ")]),["review","Review"+(due?" ("+due+")":"")],["qa","QA Scorecard"],["drill","Drill"],["exam","Exam"],["readiness","Readiness"],["settings","Settings"]];
   $("#nav").innerHTML = items.map(([h,n])=>`<a href="#${h}" class="${active===h?"on":""}">${esc(n)}</a>`).join("")
     + (CAP.tts||CAP.dict?`<button class="vtoggle" id="vt" aria-pressed="${P.voice}" title="Read-aloud and speaking practice">Voice ${P.voice?"on":"off"}</button>`:"");
   const vt=$("#vt"); if(vt) vt.onclick=()=>{ P.voice=!P.voice; save(); stopSpeak(); route(); };
@@ -1205,7 +1207,7 @@ Include every criterion once, in order. Give 1-2 better_lines.`;
       const j=await CAP.sample.json(prompt,{modelTier:"default",cache:false});
       const crit=RUBRIC.map(r=>{const f=(j.criteria||[]).find(c=>c.name===r.k)||{score:0,comment:"Not assessed."};return {...r,score:Math.max(0,Math.min(100,+f.score||0)),comment:f.comment};});
       const total=Math.round(crit.reduce((a,c)=>a+c.score*c.w,0)/RUBRIC.reduce((a,c)=>a+c.w,0));
-      P.sims.push({id,score:total,at:new Date().toISOString().slice(0,10),dur}); save();
+      P.sims.push({id,score:total,at:new Date().toISOString().slice(0,10),dur,ts:Date.now(),crit:crit.map(c=>[c.k,c.score])}); save();
       res.innerHTML=`<div class="score">
         <div class="score-top"><div><span class="label">Weighted QA score</span><div class="big">${total}%</div></div>
           <span class="verdict ${total>=PASS?"pass":"fail"}">${total>=PASS?"Pass":"Below "+PASS+"% target"}</span>
@@ -1285,6 +1287,9 @@ function route(){
   else if(h==="review"){ app.innerHTML=viewCards(null); drawCard(); }
   else if(h==="qa") app.innerHTML=viewQA();
   else if(h==="plan") app.innerHTML=viewPlan();
+  else if(h==="drill"){ app.innerHTML=viewDrill(); bindDrill(); }
+  else if(h==="exam"){ app.innerHTML=viewExam(); bindExam(); }
+  else if(h==="readiness"){ app.innerHTML=viewReadiness(); bindReadiness(); }
   else if(h==="settings"){ app.innerHTML=viewSettings(); bindSettings(); }
   else app.innerHTML=viewHome();
   window.scrollTo(0,0);
