@@ -1,8 +1,8 @@
 /* 26-week plan. `lessons` lists lesson ids that already exist; weeks without any show "Coming soon". */
 window.WEEKS=[
- {w:1,phase:"Phase 1: Foundations",title:"Call flow, tone and empathy",topics:"Open, verify, discover, resolve, close. Empathy, active listening, positive language.",lessons:["f1","f2"]},
- {w:2,phase:"Phase 1: Foundations",title:"De-escalation, hold, transfer, notes",topics:"Angry callers, hold and transfer etiquette, ticket notes, call control, objections.",lessons:["f3","f4"]},
- {w:3,phase:"Phase 1: Foundations",title:"KPIs, compliance, tools",topics:"AHT, FCR, CSAT. PCI, HIPAA, privacy, ID verification. Knowledge base use, typing drills.",lessons:[]},
+ {w:1,phase:"Phase 1: Foundations",title:"Call flow, tone and empathy",topics:"Open, verify, discover, resolve, close. Voice and tone, questioning, verification, closing.",lessons:["f1","f5","f2","f6","f7","f8"]},
+ {w:2,phase:"Phase 1: Foundations",title:"De-escalation, hold, transfer, notes",topics:"Angry callers, call control, objections and supervisors, abusive calls, hold and transfer, ticket notes.",lessons:["f3","f9","f10","f11","f4","f12"]},
+ {w:3,phase:"Phase 1: Foundations",title:"KPIs, compliance, tools. Checkpoint",topics:"AHT, FCR, CSAT. PCI, HIPAA, privacy. Fraud red flags, knowledge base, typing drills, staying steady.",lessons:["f13","f14","f15","f16","f17","f18","f19"]},
  {w:4,phase:"Phase 2: TSR L1",title:"Method and connectivity basics",topics:"Isolation questions, lights, cables, power cycle.",lessons:["a1","a2"]},
  {w:5,phase:"Phase 2: TSR L1",title:"Wi-Fi basics and speed",topics:"Speed tests, router setup, pairing devices.",lessons:[]},
  {w:6,phase:"Phase 2: TSR L1",title:"Windows: accounts, printers, slow PC",topics:"Password reset, lockouts, printers, updates.",lessons:["a3","a4"]},

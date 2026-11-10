@@ -714,6 +714,13 @@ const VISUALS = {
 };
 LESSONS.forEach(l=>Object.assign(l,VISUALS[l.id]||{}));
 LESSONS.forEach(l=>{ if(!l.steps) l.steps={h:"",items:[]}; });
+/* order: by track, then by the week/position set in the plan */
+(function(){
+  const ti=id=>{const i=TRACKS.findIndex(t=>t.id===id);return i<0?99:i;};
+  const pos=id=>{const W=window.WEEKS||[];for(let i=0;i<W.length;i++){const j=(W[i].lessons||[]).indexOf(id);if(j>=0)return i*100+j;}return 99999;};
+  const base=new Map(LESSONS.map((l,i)=>[l.id,i]));
+  LESSONS.sort((a,b)=>ti(a.track)-ti(b.track)||pos(a.id)-pos(b.id)||base.get(a.id)-base.get(b.id));
+})();
 
 const SIMS = {
  "sim-f1":{title:"Frustrated third-time caller",account:"Northwave Fiber",level:"intermediate",lang:"en",lesson:"f3",
