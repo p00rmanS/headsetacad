@@ -1,6 +1,6 @@
 /* Readiness phase: weeks 23 to 26 */
 window.EXTRA_TRACKS=(window.EXTRA_TRACKS||[]).concat([
-  {id:"ready",code:"READY",name:"Readiness",blurb:"Mixed calls under time pressure, mock QA, the final exam, interview prep and your first 30 days."}
+  {id:"ready",code:"READY",name:"Final weeks",blurb:"Mixed calls under time pressure, mock QA, the final exam, interview prep and your first 30 days."}
 ]);
 
 window.EXTRA_LESSONS=(window.EXTRA_LESSONS||[]).concat([

@@ -915,7 +915,7 @@ function refreshListen(){}
 /* ============================== VIEWS ============================== */
 function nav(active){
   const due=dueCards().length;
-  const items=[["home","Home"],["plan","Plan"],...TRACKS.map(t=>["track-"+t.id,t.name.replace("Tech Support ","TSR ")]),["review","Review"+(due?" ("+due+")":"")],["qa","QA Scorecard"],["drill","Drill"],["exam","Exam"],["readiness","Readiness"],["settings","Settings"]];
+  const items=[["home","Home"],["plan","Plan"],...TRACKS.map(t=>["track-"+t.id,t.name.replace("Tech Support ","TSR ")]),["review","Review"+(due?" ("+due+")":"")],["qa","QA Scorecard"],["talks","Talk-throughs"],["drill","Drill"],["exam","Exam"],["readiness","Readiness"],["settings","Settings"]];
   $("#nav").innerHTML = items.map(([h,n])=>`<a href="#${h}" class="${active===h?"on":""}">${esc(n)}</a>`).join("")
     + (CAP.tts||CAP.dict?`<button class="vtoggle" id="vt" aria-pressed="${P.voice}" title="Read-aloud and speaking practice">Voice ${P.voice?"on":"off"}</button>`:"");
   const vt=$("#vt"); if(vt) vt.onclick=()=>{ P.voice=!P.voice; save(); stopSpeak(); route(); };
@@ -962,7 +962,7 @@ function viewHome(){
   <section style="display:grid;gap:12px">
     <h2>Accounts you’ll work</h2>
     <div class="row">${Object.entries(ACCOUNTS).map(([a,d])=>`<span class="chip" title="${esc(d)}">${esc(a)} · ${esc(d)}</span>`).join("")}</div>
-    ${!CAP.sample?`<p class="notice">Live AI calls turn on when you add your Anthropic API key in <a href="#settings">Settings</a>. Lessons, diagrams, quizzes, flashcards and voice work without it.</p>`:""}
+    ${!CAP.sample?`<p class="notice">Live AI calls turn on when you add your Anthropic API key in <a href="#settings">Settings</a>. Lessons, quizzes, flashcards, voice and the <a href="#talks">talk-throughs</a> work without it.</p>`:""}
   </section>`;
 }
 
@@ -1052,7 +1052,7 @@ function viewSim(id){
   return `
   <div class="crumb"><a href="#home">Home</a> / <a href="#track-${t.id}">${esc(t.name)}</a> / <a href="#lesson-${les.id}">${esc(les.title)}</a> / Live call</div>
   <section style="display:grid;gap:8px"><div class="row">${lvl(s.level)}<span class="chip">${esc(s.account)}</span>${es?'<span class="chip es">Español</span>':""}${bestSim(id)!==null?`<span class="chip done">Best ${bestSim(id)}%</span>`:""}</div><h1>${esc(s.title)}</h1></section>
-  ${!CAP.sample?`<p class="notice">The AI customer runs once you add your API key in <a href="#settings">Settings</a>. Until then, review the model call in the <a href="#lesson-${les.id}">lesson</a>.</p>`:""}
+  ${!CAP.sample?`<p class="notice">The AI customer runs once you add your API key in <a href="#settings">Settings</a>. Until then, try the <a href="#talks">talk-throughs</a> or review the model call in the <a href="#lesson-${les.id}">lesson</a>.</p>`:""}
   <div class="sim" id="simWrap">
     <div class="crm">
       <h3>CRM · ${esc(s.account)}</h3>
@@ -1287,6 +1287,8 @@ function route(){
   else if(h==="review"){ app.innerHTML=viewCards(null); drawCard(); }
   else if(h==="qa") app.innerHTML=viewQA();
   else if(h==="plan") app.innerHTML=viewPlan();
+  else if(h==="talks") app.innerHTML=viewTalks();
+  else if(h.startsWith("talk-")){ app.innerHTML=viewTalk(h.slice(5)); bindTalk(h.slice(5)); }
   else if(h==="drill"){ app.innerHTML=viewDrill(); bindDrill(); }
   else if(h==="exam"){ app.innerHTML=viewExam(); bindExam(); }
   else if(h==="readiness"){ app.innerHTML=viewReadiness(); bindReadiness(); }
