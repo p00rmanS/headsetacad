@@ -1053,6 +1053,7 @@ function viewSim(id){
   <div class="crumb"><a href="#home">Home</a> / <a href="#track-${t.id}">${esc(t.name)}</a> / <a href="#lesson-${les.id}">${esc(les.title)}</a> / Live call</div>
   <section style="display:grid;gap:8px"><div class="row">${lvl(s.level)}<span class="chip">${esc(s.account)}</span>${es?'<span class="chip es">Español</span>':""}${bestSim(id)!==null?`<span class="chip done">Best ${bestSim(id)}%</span>`:""}</div><h1>${esc(s.title)}</h1></section>
   ${!CAP.sample?`<p class="notice">The AI customer runs once you add your API key in <a href="#settings">Settings</a>. Until then, try the <a href="#talks">talk-throughs</a> or review the model call in the <a href="#lesson-${les.id}">lesson</a>.</p>`:""}
+  <div class="panel" style="display:grid;gap:8px"><span class="label">Difficulty</span><div class="row" id="diffRow">${HARD.LEVELS.map(l=>`<label class="row" style="gap:6px;font-size:14px"><input type="radio" name="diff" value="${l.k}" ${HARD.get()===l.k?"checked":""}> <b>${l.name}</b> <span class="muted" style="font-size:12.5px">${l.blurb}</span></label>`).join("")}</div></div>
   <div class="sim" id="simWrap">
     <div class="crm">
       <h3>CRM · ${esc(s.account)}</h3>
@@ -1091,7 +1092,7 @@ function viewSim(id){
   <div id="result"></div>`;
 }
 
-function personaPrompt(s){
+function personaPrompt(s,extra){
   const es=s.lang==="es";
   return `You are role-playing a CUSTOMER calling ${s.account} customer support, inside a training simulator for a call-center agent. Stay fully in character as the customer at all times. Never act as the agent, never coach or hint at what the agent should do, never mention being an AI or a simulation.
 
@@ -1103,14 +1104,15 @@ Mood: ${s.mood} Become calmer and more cooperative when the agent shows genuine,
 Only the agent's words are shown to you; you cannot see their screen.
 
 Speak ${es?"ONLY in natural Latin American Spanish, as the customer described (you address the agent as usted). Even if the agent writes in English, answer in Spanish and sound a bit confused by the English.":"in natural, conversational English."} Keep each reply short, 1 to 3 sentences, like real speech on a phone. No stage directions, no asterisks, no quotation marks around your reply.
-If the agent closes the call after the issue is handled, say a brief goodbye.`;
+If the agent closes the call after the issue is handled, say a brief goodbye.${extra||""}`;
 }
 
 function bindSim(id){
   const s=SIMS[id]; if(!s) return;
   const es=s.lang==="es";
   const feed=$("#feed"), msg=$("#msg"), send=$("#send"), start=$("#startCall"), end=$("#endCall"), hint=$("#hint"), coach=$("#coach");
-  CALL={id, turns:[], started:0, timer:null, busy:false, ctl:null};
+  CALL={id, turns:[], started:0, timer:null, busy:false, ctl:null, level:HARD.get(), curves:[]};
+  document.querySelectorAll('input[name="diff"]').forEach(r=>r.onchange=()=>{HARD.set(r.value);CALL.level=r.value;});
   const add=(who,text)=>{
     const d=document.createElement("div");
     if(who==="sys"){d.className="sys";d.textContent=text;}
@@ -1119,6 +1121,8 @@ function bindSim(id){
   };
   const tick=()=>{const sec=Math.floor((Date.now()-CALL.started)/1000);$("#timer").textContent=String(Math.floor(sec/60)).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");};
   start.onclick=()=>{
+    CALL.level=HARD.get(); CALL.curves=HARD.pick(CALL.level);
+    document.querySelectorAll('input[name="diff"]').forEach(r=>r.disabled=true);
     CALL.started=Date.now(); CALL.timer=setInterval(tick,1000);
     $("#dot").classList.add("on"); $("#stat").textContent="On call";
     start.disabled=true; end.disabled=false; msg.disabled=false; send.disabled=false; hint.disabled=false; const m=$("#mic"); if(m) m.disabled=false;
@@ -1126,7 +1130,7 @@ function bindSim(id){
     msg.focus();
   };
   const buildInput=()=>{
-    const out=[]; const sys=personaPrompt(s);
+    const out=[]; const sys=personaPrompt(s,HARD.addon(CALL.level,CALL.curves));
     CALL.turns.forEach((t,i)=>{
       if(t.who==="a") out.push({role:"user",content: i===0? sys+"\n\nThe call just connected. The agent says:\n"+t.text : t.text});
       else out.push({role:"assistant",content:t.text});
@@ -1190,7 +1194,7 @@ What the correct resolution looks like (hidden from the agent during the call): 
 Customer facts: ${s.facts}
 Data visible to the agent in the CRM (including verification policy): ${JSON.stringify(s.crm)}
 Call duration: ${dur}
-
+${HARD.scoreNote(CALL.level,CALL.curves)}
 QA form (criterion: weight: description):
 ${RUBRIC.map(r=>`- ${r.k}: ${r.w}: ${r.d}`).join("\n")}
 
@@ -1207,11 +1211,11 @@ Include every criterion once, in order. Give 1-2 better_lines.`;
       const j=await CAP.sample.json(prompt,{modelTier:"default",cache:false});
       const crit=RUBRIC.map(r=>{const f=(j.criteria||[]).find(c=>c.name===r.k)||{score:0,comment:"Not assessed."};return {...r,score:Math.max(0,Math.min(100,+f.score||0)),comment:f.comment};});
       const total=Math.round(crit.reduce((a,c)=>a+c.score*c.w,0)/RUBRIC.reduce((a,c)=>a+c.w,0));
-      P.sims.push({id,score:total,at:new Date().toISOString().slice(0,10),dur,ts:Date.now(),crit:crit.map(c=>[c.k,c.score])}); save();
+      P.sims.push({id,score:total,at:new Date().toISOString().slice(0,10),dur,ts:Date.now(),d:CALL.level,crit:crit.map(c=>[c.k,c.score])}); save();
       res.innerHTML=`<div class="score">
         <div class="score-top"><div><span class="label">Weighted QA score</span><div class="big">${total}%</div></div>
           <span class="verdict ${total>=PASS?"pass":"fail"}">${total>=PASS?"Pass":"Below "+PASS+"% target"}</span>
-          <span class="chip">AHT ${dur}</span><span class="chip">${j.resolved?"Resolved":"Not resolved"}</span>
+          <span class="chip">AHT ${dur}</span><span class="chip">${j.resolved?"Resolved":"Not resolved"}</span>${HARD.chips(CALL.level)}${CALL.curves.length?`<span class="chip">Curveball${CALL.curves.length>1?"s":""}: ${esc(CALL.curves.map(c=>c.label).join(" + "))}</span>`:""}
           <div class="row" style="margin-left:auto"><button class="btn" id="retry">Take the call again</button><a class="btn" href="#lesson-${s.lesson}">Review lesson</a></div></div>
         <div>${crit.map(c=>`<div class="crit"><span style="font-weight:600">${esc(c.k)} <span class="muted mono" style="font-weight:400;font-size:12px">×${c.w}</span></span><span class="pill" style="color:${c.score>=85?"var(--ok)":c.score>=60?"var(--warn)":"var(--bad)"}">${c.score}</span><span class="c">${esc(c.comment||"")}</span></div>`).join("")}</div>
         <div class="rubric">
