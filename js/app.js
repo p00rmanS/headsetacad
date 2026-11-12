@@ -1002,6 +1002,7 @@ function viewLesson(id){
     ${l.steps.items.length?`<section><h2>${esc(l.steps.h)}</h2><div class="steps">${l.steps.items.map((s,i)=>`<div class="step"><span class="k">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(s[0])}</div><div class="say">${esc(s[1])}</div></div></div>`).join("")}</div></section>`:""}
     ${l.decide?treeHTML(l.decide):""}
     <section><div class="row" style="justify-content:space-between"><h2>Model call</h2>${V()?`<button class="btn sm" id="playScript">▶ Play call</button>`:""}</div><div class="script">${l.script.map(s=>`<div class="bub ${s[0]}"><small>${s[0]==="a"?"Agent":"Customer"}</small>${esc(s[1])}${s[2]?`<span class="note">${esc(s[2])}</span>`:""}</div>`).join("")}</div></section>
+    ${window.ARCS?ARCS.html(l,esc):""}
     <section><h2>Check your understanding</h2><div class="quiz">${l.quiz.map((q,qi)=>`<div class="q" data-q="${qi}"><b>${qi+1}. ${esc(q[0])}</b>${q[1].map((o,oi)=>`<button class="opt ${qs[qi]!==undefined?(oi===q[2]?"right":(qs[qi]===oi?"wrong":"")):""}" data-o="${oi}">${esc(o)}</button>`).join("")}<div class="why" ${qs[qi]===undefined?"hidden":""}>${esc(q[3])}</div></div>`).join("")}<button class="btn sm" id="retake" style="justify-self:start">Retake quiz</button></div></section>
     <section class="recap"><span class="label">Recap: read this again before your next call</span>
       <ol>${l.teach.map(([h,p])=>`<li><b>${esc(h)}.</b> ${esc(p.split(/(?<=\.)\s/)[0])}</li>`).join("")}</ol>
