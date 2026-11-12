@@ -55,7 +55,7 @@
     const synth=window.speechSynthesis; let stateCb=null, token=0;
     const setState=s=>{ try{ stateCb&&stateCb({state:s}); }catch(e){} };
     const pick=(lang,role)=>{
-      const vs=synth.getVoices().filter(v=>v.lang.toLowerCase().startsWith(lang));
+      const vs=synth.getVoices().filter(v=>{const l=v.lang.toLowerCase().replace("_","-");return lang==="tl"?(l.startsWith("fil")||l.startsWith("tl")):l.startsWith(lang);});
       if(!vs.length) return null;
       const pref=lang==="es"?["es-us","es-mx","es-es"]:["en-us","en-gb"];
       const ranked=[...vs].sort((a,b)=>{
@@ -72,8 +72,8 @@
           for(const c of chunks(ln.text)){
             if(my!==token) return;
             await new Promise(res=>{
-              const u=new SpeechSynthesisUtterance(c); const lang=ln.language==="es"?"es":"en";
-              u.lang=lang==="es"?"es-US":"en-US"; const v=pick(lang,ln.voice); if(v){ u.voice=v; u.lang=v.lang; }
+              const u=new SpeechSynthesisUtterance(c); const lang=ln.language==="es"?"es":ln.language==="tl"?"tl":"en";
+              u.lang=lang==="es"?"es-US":lang==="tl"?"fil-PH":"en-US"; const v=pick(lang,ln.voice); if(v){ u.voice=v; u.lang=v.lang; }
               u.pitch=ln.voice==="rounded"?0.9:1.05; u.rate=1;
               u.onend=u.onerror=()=>res(); synth.speak(u);
             });
@@ -93,7 +93,7 @@
     return {
       onFinal(cb){ fin=cb; }, onState(cb){ st=cb; },
       async start({language}={}){
-        rec=new SR(); rec.lang=language==="es"?"es-US":"en-US"; rec.interimResults=false; rec.continuous=true;
+        rec=new SR(); rec.lang=language==="es"?"es-US":language==="tl"?"fil-PH":"en-US"; rec.interimResults=false; rec.continuous=true;
         rec.onresult=e=>{ for(let i=e.resultIndex;i<e.results.length;i++) if(e.results[i].isFinal&&fin) fin({text:e.results[i][0].transcript.trim()}); };
         rec.onend=()=>st&&st({state:"idle"});
         rec.onerror=e=>{ if(e.error==="not-allowed"||e.error==="service-not-allowed"){ st&&st({state:"idle"}); } };

@@ -5,7 +5,8 @@ const TRACKS = [
   {id:"l2", code:"TSR-L2", name:"Tech Support L2", blurb:"DNS and IP, intermittent Wi-Fi, email profiles. Deeper diagnostics with command-line tools."},
   {id:"l3", code:"TSR-L3", name:"Tech Support L3", blurb:"Outage triage, engineering escalations, and incident communication with business customers."},
   {id:"csr", code:"CSR", name:"Customer Service", blurb:"Billing, orders and returns, fraud disputes, insurance claims and retention across four accounts."},
-  {id:"es", code:"BIL-ES", name:"Bilingual Spanish", blurb:"Run the same calls in Spanish: greetings, verification, tech and billing vocabulary, empathy."}
+  {id:"es", code:"BIL-ES", name:"Bilingual Spanish", blurb:"Run the same calls in Spanish: greetings, verification, tech and billing vocabulary, empathy."},
+  {id:"tl", code:"BIL-TL", name:"Bilingual Tagalog", blurb:"Run the same calls in Tagalog and Taglish: respect forms, tech and billing vocabulary, empathy and clear steps."}
 ];
 
 if(window.EXTRA_TRACKS) TRACKS.push(...window.EXTRA_TRACKS);
@@ -869,7 +870,7 @@ function cardsFor(l){
   const c=[];
   l.teach.forEach(([h,p],i)=>c.push({id:l.id+":t"+i,front:h,back:p}));
   l.steps.items.forEach((s,i)=>c.push({id:l.id+":s"+i,front:"Step “"+s[0]+"”: what do you say?",back:s[1]}));
-  (l.phrases||[]).forEach((p,i)=>{c.push({id:l.id+":p"+i,front:"Say it in Spanish: "+p[1],back:p[0]});c.push({id:l.id+":r"+i,front:"What does this mean? "+p[0],back:p[1]});});
+  (l.phrases||[]).forEach((p,i)=>{c.push({id:l.id+":p"+i,front:"Say it in "+(l.lang==="tl"?"Tagalog":"Spanish")+": "+p[1],back:p[0]});c.push({id:l.id+":r"+i,front:"What does this mean? "+p[0],back:p[1]});});
   l.quiz.forEach((q,i)=>c.push({id:l.id+":q"+i,front:q[0],back:q[1][q[2]]+" — "+q[3]}));
   l.qa.forEach((x,i)=>c.push({id:l.id+":a"+i,front:"QA checkpoint for “"+l.title+"” (#"+(i+1)+" of "+l.qa.length+")",back:x}));
   return c.map(x=>({...x,lesson:l.id}));
@@ -976,7 +977,7 @@ function viewTrack(id){
    <div style="max-width:360px;display:grid;gap:4px;margin-top:6px"><div class="row" style="justify-content:space-between;font-size:13px"><span class="muted">Progress</span><span class="mono">${trackPct(id)}%</span></div><div class="bar"><i style="width:${trackPct(id)}%"></i></div></div></section>
   <div class="list">
    ${ls.map((l,i)=>{const s=l.sim?SIMS[l.sim]:null;const b=s?bestSim(l.sim):null;
-    return `<a class="item" href="#lesson-${l.id}"><span class="n">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(l.title)}</div><div class="meta">${lvl(l.level)}<span class="chip">${esc(l.account)}</span><span class="chip">${l.mins} min</span>${l.lang==="es"?'<span class="chip es">Español</span>':""}${s?`<span class="chip">Live call${b!==null?" · best "+b+"%":""}</span>`:""}${P.done[l.id]?'<span class="chip done">Complete</span>':""}</div></div><span class="go btn sm">Open</span></a>`}).join("")}
+    return `<a class="item" href="#lesson-${l.id}"><span class="n">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(l.title)}</div><div class="meta">${lvl(l.level)}<span class="chip">${esc(l.account)}</span><span class="chip">${l.mins} min</span>${l.lang==="es"?'<span class="chip es">Español</span>':l.lang==="tl"?'<span class="chip es">Tagalog</span>':""}${s?`<span class="chip">Live call${b!==null?" · best "+b+"%":""}</span>`:""}${P.done[l.id]?'<span class="chip done">Complete</span>':""}</div></div><span class="go btn sm">Open</span></a>`}).join("")}
   </div>`;
 }
 
@@ -988,7 +989,7 @@ function viewLesson(id){
   return `
   <div class="crumb"><a href="#home">Home</a> / <a href="#track-${t.id}">${esc(t.name)}</a> / Lesson ${idx+1}</div>
   <section style="display:grid;gap:10px">
-    <div class="row">${lvl(l.level)}<span class="chip">${esc(l.account)}</span><span class="chip">${l.mins} min</span>${l.lang==="es"?'<span class="chip es">Español</span>':""}</div>
+    <div class="row">${lvl(l.level)}<span class="chip">${esc(l.account)}</span><span class="chip">${l.mins} min</span>${l.lang==="es"?'<span class="chip es">Español</span>':l.lang==="tl"?'<span class="chip es">Tagalog</span>':""}</div>
     <h1>${esc(l.title)}</h1>
     <div class="row">${V()?`<button class="btn" id="listen">▶ Listen to lesson</button><button class="btn sm" id="stopL">Stop</button>`:""}<a class="btn" href="#cards-${l.id}">Flashcards (${cardsFor(l).length})</a>${l.sim?`<a class="btn live" href="#sim-${l.sim}">Take the live call</a>`:""}<span class="chip">Read ${P.reads[l.id]||0}×</span></div>
   </section>
@@ -1020,7 +1021,7 @@ function viewLesson(id){
 }
 function bindLesson(id){
   const l=LESSONS.find(x=>x.id===id); if(!l) return;
-  const lang=l.lang==="es";
+  const lang=l.lang==="es"||l.lang==="tl"; const LCODE=l.lang==="tl"?"tl":"es";
   document.querySelectorAll(".q").forEach(qd=>{
     qd.querySelectorAll(".opt").forEach(b=>b.onclick=()=>{
       const qi=+qd.dataset.q, oi=+b.dataset.o, q=l.quiz[qi];
@@ -1035,23 +1036,24 @@ function bindLesson(id){
   $("#readAgain").onclick=()=>{ P.reads[l.id]=(P.reads[l.id]||0)+1; save(); route(); };
   const L=$("#listen"); if(L) L.onclick=()=>{
     const lines=[{text:l.title,voice:"buttery",language:"en"}].concat(l.teach.map(([h,p])=>({text:h+". "+p,voice:"buttery",language:"en"})));
-    l.steps.items.forEach((s,i)=>lines.push({text:s[0]+". "+s[1],voice:"buttery",language:(lang&&/[áéíóúñ¿¡]/i.test(s[1]))?"es":"en"}));
+    l.steps.items.forEach((s,i)=>lines.push({text:s[0]+". "+s[1],voice:"buttery",language:(lang&&(l.lang==="tl"||/[áéíóúñ¿¡]/i.test(s[1])))?LCODE:"en"}));
     speak(lines);
   };
   const S=$("#stopL"); if(S) S.onclick=stopSpeak;
-  const PS=$("#playScript"); if(PS) PS.onclick=()=>speak(l.script.map(s=>({text:s[1],voice:s[0]==="a"?"glassy":"rounded",language:lang?"es":"en"})));
-  document.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak([{text:l.phrases[+b.dataset.say][0],voice:"glassy",language:"es"}]));
+  const PS=$("#playScript"); if(PS) PS.onclick=()=>speak(l.script.map(s=>({text:s[1],voice:s[0]==="a"?"glassy":"rounded",language:lang?LCODE:"en"})));
+  document.querySelectorAll("[data-say]").forEach(b=>b.onclick=()=>speak([{text:l.phrases[+b.dataset.say][0],voice:"glassy",language:LCODE}]));
 }
 
 /* ---------------- SIM ---------------- */
 let CALL=null;
 function viewSim(id){
   const s=SIMS[id]; if(!s) return viewHome();
+  const tl=s.lang==="tl";
   const les=LESSONS.find(l=>l.id===s.lesson); const t=trackOf(les.track); nav("track-"+t.id);
   const es=s.lang==="es";
   return `
   <div class="crumb"><a href="#home">Home</a> / <a href="#track-${t.id}">${esc(t.name)}</a> / <a href="#lesson-${les.id}">${esc(les.title)}</a> / Live call</div>
-  <section style="display:grid;gap:8px"><div class="row">${lvl(s.level)}<span class="chip">${esc(s.account)}</span>${es?'<span class="chip es">Español</span>':""}${bestSim(id)!==null?`<span class="chip done">Best ${bestSim(id)}%</span>`:""}</div><h1>${esc(s.title)}</h1></section>
+  <section style="display:grid;gap:8px"><div class="row">${lvl(s.level)}<span class="chip">${esc(s.account)}</span>${es?'<span class="chip es">Español</span>':tl?'<span class="chip es">Tagalog</span>':""}${bestSim(id)!==null?`<span class="chip done">Best ${bestSim(id)}%</span>`:""}</div><h1>${esc(s.title)}</h1></section>
   ${!CAP.sample?`<p class="notice">The AI customer runs once you add your API key in <a href="#settings">Settings</a>. Until then, try the <a href="#talks">talk-throughs</a> or review the model call in the <a href="#lesson-${les.id}">lesson</a>.</p>`:""}
   <div class="panel" style="display:grid;gap:8px"><span class="label">Difficulty</span><div class="row" id="diffRow">${HARD.LEVELS.map(l=>`<label class="row" style="gap:6px;font-size:14px"><input type="radio" name="diff" value="${l.k}" ${HARD.get()===l.k?"checked":""}> <b>${l.name}</b> <span class="muted" style="font-size:12.5px">${l.blurb}</span></label>`).join("")}</div></div>
   <div class="sim" id="simWrap">
@@ -1059,7 +1061,7 @@ function viewSim(id){
       <h3>CRM · ${esc(s.account)}</h3>
       <dl>${Object.entries(s.crm).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>
       <div class="brief"><span class="label">Your goal</span><span>${esc(s.goal)}</span></div>
-      <div class="brief"><span class="label">Tips</span><span class="muted">Type what you’d say out loud. ${es?"Speak Spanish the whole call. ":""}Write your ticket notes before ending the call: they are graded.</span></div>
+      <div class="brief"><span class="label">Tips</span><span class="muted">Type what you’d say out loud. ${es?"Speak Spanish the whole call. ":tl?"Speak Tagalog (Taglish is fine, with po and opo) the whole call. ":""}Write your ticket notes before ending the call: they are graded.</span></div>
     </div>
     <div class="console">
       <div class="console-head">
@@ -1070,7 +1072,7 @@ function viewSim(id){
           <button class="btn sm" id="endCall" disabled>End call & score</button>
         </div>
       </div>
-      <div class="feed" id="feed"><div class="sys">An incoming call is waiting on the ${esc(s.account)} ${es?"Spanish line":"queue"}. Answer it, then greet the customer.</div></div>
+      <div class="feed" id="feed"><div class="sys">An incoming call is waiting on the ${esc(s.account)} ${es?"Spanish line":tl?"Tagalog line":"queue"}. Answer it, then greet the customer.</div></div>
       <div class="compose">
         <textarea id="msg" placeholder="${es?"Escriba lo que diría al cliente…":"Type what you would say to the customer…"}" disabled></textarea>
         <div class="row" style="justify-content:space-between">
@@ -1093,7 +1095,7 @@ function viewSim(id){
 }
 
 function personaPrompt(s,extra){
-  const es=s.lang==="es";
+  const es=s.lang==="es", tl=s.lang==="tl";
   return `You are role-playing a CUSTOMER calling ${s.account} customer support, inside a training simulator for a call-center agent. Stay fully in character as the customer at all times. Never act as the agent, never coach or hint at what the agent should do, never mention being an AI or a simulation.
 
 Who you are: ${s.persona}
@@ -1103,13 +1105,13 @@ What happens when the agent has you check or try things: ${s.behavior}
 Mood: ${s.mood} Become calmer and more cooperative when the agent shows genuine, specific empathy and clear ownership. Become more frustrated if the agent is robotic, blames you, uses jargon without explaining, interrupts, makes you repeat yourself, or puts you on hold without asking. If the agent asks you to do something not covered above, react realistically and consistently with the facts.
 Only the agent's words are shown to you; you cannot see their screen.
 
-Speak ${es?"ONLY in natural Latin American Spanish, as the customer described (you address the agent as usted). Even if the agent writes in English, answer in Spanish and sound a bit confused by the English.":"in natural, conversational English."} Keep each reply short, 1 to 3 sentences, like real speech on a phone. No stage directions, no asterisks, no quotation marks around your reply.
+Speak ${es?"ONLY in natural Latin American Spanish, as the customer described (you address the agent as usted). Even if the agent writes in English, answer in Spanish and sound a bit confused by the English.":tl?"in natural everyday Tagalog as spoken by a Filipino on the phone, mixing in common English words the way real Taglish does (internet, bill, account). Use po and opo with the agent as a respectful customer would. If the agent answers only in English, reply in Tagalog and sound a little unsure.":"in natural, conversational English."} Keep each reply short, 1 to 3 sentences, like real speech on a phone. No stage directions, no asterisks, no quotation marks around your reply.
 If the agent closes the call after the issue is handled, say a brief goodbye.${extra||""}`;
 }
 
 function bindSim(id){
   const s=SIMS[id]; if(!s) return;
-  const es=s.lang==="es";
+  const es=s.lang==="es", tl=s.lang==="tl";
   const feed=$("#feed"), msg=$("#msg"), send=$("#send"), start=$("#startCall"), end=$("#endCall"), hint=$("#hint"), coach=$("#coach");
   CALL={id, turns:[], started:0, timer:null, busy:false, ctl:null, level:HARD.get(), curves:[]};
   document.querySelectorAll('input[name="diff"]').forEach(r=>r.onchange=()=>{HARD.set(r.value);CALL.level=r.value;});
@@ -1146,7 +1148,7 @@ function bindSim(id){
       CALL.ctl=new AbortController();
       const r=await CAP.sample(buildInput(),{modelTier:"default",cache:false,signal:CALL.ctl.signal,onText:({text})=>{bub.lastChild.textContent=text;feed.scrollTop=feed.scrollHeight;}});
       const reply=r.text.trim(); bub.lastChild.textContent=reply; CALL.turns.push({who:"c",text:reply});
-      const v=$("#voiceOn"); if(V() && v && v.checked) speak([{text:reply.slice(0,1900),voice:"rounded",language:es?"es":"en"}]);
+      const v=$("#voiceOn"); if(V() && v && v.checked) speak([{text:reply.slice(0,1900),voice:"rounded",language:es?"es":tl?"tl":"en"}]);
     }catch(e){
       bub.remove(); CALL.turns.pop();
       add("sys", e&&e.code==="bad_key"?"Your API key was rejected. Check it in Settings.": e&&e.code==="no_credit"?"Your API account has no credit left.": e&&e.code==="rate_limited"?"Too many requests right now. Wait a moment and send again.":"The customer didn’t respond. Send your line again.");
@@ -1160,7 +1162,7 @@ function bindSim(id){
     hint.disabled=true; coach.hidden=false; coach.textContent="Thinking…";
     const tr=CALL.turns.map(t=>(t.who==="a"?"AGENT: ":"CUSTOMER: ")+t.text).join("\n");
     try{
-      const r=await CAP.sample(`You are a contact-center QA coach. The trainee is on a live ${es?"Spanish-language ":""}call for ${s.account}. Call goal: ${s.goal}\nAccount data visible to the agent: ${JSON.stringify(s.crm)}\n\nTranscript so far:\n${tr}\n\nIn at most 2 sentences, tell the trainee the single best next move and give one example line they could say${es?" in Spanish (usted)":""}. Do not reveal hidden facts the customer hasn't said.`,{modelTier:"quick",cache:false});
+      const r=await CAP.sample(`You are a contact-center QA coach. The trainee is on a live ${es?"Spanish-language ":tl?"Tagalog-language ":""}call for ${s.account}. Call goal: ${s.goal}\nAccount data visible to the agent: ${JSON.stringify(s.crm)}\n\nTranscript so far:\n${tr}\n\nIn at most 2 sentences, tell the trainee the single best next move and give one example line they could say${es?" in Spanish (usted)":tl?" in Tagalog (with po and opo)":""}. Do not reveal hidden facts the customer hasn't said.`,{modelTier:"quick",cache:false});
       coach.textContent=r.text.trim();
     }catch(e){ coach.textContent="Coach unavailable right now."; }
     hint.disabled=false;
@@ -1175,7 +1177,7 @@ function bindSim(id){
     mic.onclick=()=>{
       if(listening){ CAP.dict.stop().catch(()=>{}); return; }
       stopSpeak();
-      CAP.dict.start({language:es?"es":"en"}).catch(err=>{ if(err&&err.code==="not_granted"){mic.hidden=true;} });
+      CAP.dict.start({language:es?"es":tl?"tl":"en"}).catch(err=>{ if(err&&err.code==="not_granted"){mic.hidden=true;} });
     };
   }
   end.onclick=async()=>{
@@ -1188,7 +1190,7 @@ function bindSim(id){
     const tr=CALL.turns.map(t=>(t.who==="a"?"AGENT: ":"CUSTOMER: ")+t.text).join("\n");
     const prompt=`You are a strict but fair contact-center Quality Assurance analyst scoring a trainee's call. Score it like a real QA department would.
 
-Account: ${s.account}. Line language: ${es?"Spanish (agent must speak Spanish and use usted)":"English"}.
+Account: ${s.account}. Line language: ${es?"Spanish (agent must speak Spanish and use usted)":tl?"Tagalog or Taglish (agent must reply in Tagalog and use po and opo)":"English"}.
 Scenario goal: ${s.goal}
 What the correct resolution looks like (hidden from the agent during the call): ${s.behavior}
 Customer facts: ${s.facts}
@@ -1205,7 +1207,7 @@ Agent's ticket notes:
 ${$("#notes").value.trim()||"(none written)"}
 
 Return JSON only, in this exact shape:
-{"criteria":[{"name":"<criterion name exactly as above>","score":<0-100 for this criterion>,"comment":"<one specific sentence citing what the agent said or missed>"}],"strengths":["<up to 3>"],"improve":["<up to 3 specific, actionable>"],"better_lines":[{"you_said":"<agent line from transcript>","try":"<stronger version${es?", in Spanish":""}>"}],"resolved":<true|false>}
+{"criteria":[{"name":"<criterion name exactly as above>","score":<0-100 for this criterion>,"comment":"<one specific sentence citing what the agent said or missed>"}],"strengths":["<up to 3>"],"improve":["<up to 3 specific, actionable>"],"better_lines":[{"you_said":"<agent line from transcript>","try":"<stronger version${es?", in Spanish":tl?", in Tagalog":""}>"}],"resolved":<true|false>}
 Include every criterion once, in order. Give 1-2 better_lines.`;
     try{
       const j=await CAP.sample.json(prompt,{modelTier:"default",cache:false});

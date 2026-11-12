@@ -10,18 +10,18 @@ function viewTalks(){
   nav("talks");
   const ids=Object.keys(TALKS);
   const by={};
-  ids.forEach(id=>{const t=TALKS[id];const k=t.lang==="es"?"es":talkTrack(t);(by[k]=by[k]||[]).push(id);});
-  const order=["found","l1","l2","l3","csr","es","ready"];
+  ids.forEach(id=>{const t=TALKS[id];const k=t.lang==="es"?"es":t.lang==="tl"?"tl":talkTrack(t);(by[k]=by[k]||[]).push(id);});
+  const order=["found","l1","l2","l3","csr","es","tl","ready"];
   const done=ids.filter(id=>(talkBest(id)||0)>=TALK_PASS).length;
   return `<section style="display:grid;gap:8px"><span class="label">No API key needed</span><h1>Talk-throughs</h1><p class="muted" style="max-width:66ch">Read the customer, then choose the best reply for each turn. You get instant feedback on why each option is strong or weak. Aim for ${TALK_PASS}% on a scenario, then move on to the live AI calls. ${done}/${ids.length} passed.</p></section>
-  ${order.filter(k=>by[k]).map(k=>`<section style="display:grid;gap:10px"><h2>${k==="es"?"Spanish line":esc(trackOf(k).name)}</h2><div class="list">${by[k].map((id,i)=>{const t=TALKS[id];const b=talkBest(id);return `<a class="item" href="#talk-${id}" style="grid-template-columns:34px 1fr auto"><span class="n">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(t.title)}</div><div class="meta"><span class="chip">${esc(t.account)}</span>${lvl(t.level)}${t.lang==="es"?'<span class="chip es">Español</span>':""}<span class="chip">${t.turns.length} turns</span></div></div>${b===null?`<span class="chip">Not tried</span>`:`<span class="chip ${b>=TALK_PASS?"done":""}">${b}%</span>`}</a>`;}).join("")}</div></section>`).join("")}`;
+  ${order.filter(k=>by[k]).map(k=>`<section style="display:grid;gap:10px"><h2>${k==="es"?"Spanish line":k==="tl"?"Tagalog line":esc(trackOf(k).name)}</h2><div class="list">${by[k].map((id,i)=>{const t=TALKS[id];const b=talkBest(id);return `<a class="item" href="#talk-${id}" style="grid-template-columns:34px 1fr auto"><span class="n">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(t.title)}</div><div class="meta"><span class="chip">${esc(t.account)}</span>${lvl(t.level)}${t.lang==="es"?'<span class="chip es">Español</span>':t.lang==="tl"?'<span class="chip es">Tagalog</span>':""}<span class="chip">${t.turns.length} turns</span></div></div>${b===null?`<span class="chip">Not tried</span>`:`<span class="chip ${b>=TALK_PASS?"done":""}">${b}%</span>`}</a>`;}).join("")}</div></section>`).join("")}`;
 }
 
 function viewTalk(id){
   const t=TALKS[id]; if(!t) return viewTalks();
   nav("talks");
   return `<div class="crumb"><a href="#talks">Talk-throughs</a> / ${esc(t.title)}</div>
-  <section style="display:grid;gap:8px"><div class="row"><span class="chip">${esc(t.account)}</span>${lvl(t.level)}${t.lang==="es"?'<span class="chip es">Español</span>':""}</div><h1>${esc(t.title)}</h1></section>
+  <section style="display:grid;gap:8px"><div class="row"><span class="chip">${esc(t.account)}</span>${lvl(t.level)}${t.lang==="es"?'<span class="chip es">Español</span>':t.lang==="tl"?'<span class="chip es">Tagalog</span>':""}</div><h1>${esc(t.title)}</h1></section>
   <div class="sim" style="grid-template-columns:minmax(0,1fr)">
    <div class="crm"><h3>Account view</h3><dl>${Object.entries(t.crm||{}).map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join("")}</dl>${t.goal?`<div class="brief"><span class="label">Goal</span><span>${esc(t.goal)}</span></div>`:""}</div>
    <div class="console" style="min-height:0"><div class="console-head"><div class="status"><span class="dot on"></span><span id="tkStat">Turn 1 of ${t.turns.length}</span></div><span class="mono muted" id="tkScore"></span></div>
@@ -36,7 +36,7 @@ function bindTalk(id){
   TK={id,i:0,pts:0,log:[]};
   const feed=$("#tkFeed"), opts=$("#tkOpts");
   const bub=(who,text)=>{const d=document.createElement("div");d.className="bub "+who;d.innerHTML=`<small>${who==="a"?"You":"Customer"}</small>`;d.appendChild(document.createTextNode(text));feed.appendChild(d);feed.scrollTop=feed.scrollHeight;return d;};
-  const say=(text,who)=>{ if(V()) speak([{text:text.slice(0,1500),voice:who==="a"?"glassy":"rounded",language:es?"es":"en"}]); };
+  const say=(text,who)=>{ if(V()) speak([{text:text.slice(0,1500),voice:who==="a"?"glassy":"rounded",language:es?"es":t.lang==="tl"?"tl":"en"}]); };
   const showTurn=()=>{
     const turn=t.turns[TK.i];
     $("#tkStat").textContent=(es?"Turno ":"Turn ")+(TK.i+1)+(es?" de ":" of ")+t.turns.length;
