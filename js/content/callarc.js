@@ -60,6 +60,8 @@
     const g=G[l.lang==="es"?"es":l.lang==="tl"?"tl":"en"];
     const b=brandOf(l.account), n=g.name;
     const A=(t,note)=>["a",t,note], C=(t,note)=>["c",t,note];
+    const m=(window.ARC_MID||{})[l.id]||[];
+    const did=m[0]||g.did, good=m[1]||g.good, fine=m[2]||g.fine;
     const open=[
       A(b?g.greet(b):g.greet0,"Brand, your name, and you ask theirs. Smile as you say it; they can hear it."),
       C(g.hi(n,iss)),
@@ -67,9 +69,9 @@
     ];
     const mid=[
       A(ask,"Middle: one clear step at a time, and say why you are doing it."),
-      C(g.did),
+      C(did),
       A(fix,"Fix it, then say out loud what you changed so they trust it."),
-      C(g.good)
+      C(good)
     ];
     const end=[
       A(g.more(rec),"End: recap what was done and what happens next, then ask if there is anything else."),
@@ -79,11 +81,11 @@
     const irate=[
       C(hot,"Let this wave pass. No interrupting, no “calm down”. Short “mm-hm” only."),
       A(g.ack+" "+own,"Step 2 and 3: name the feeling, then own it with something specific. Not “policy says”."),
-      C(g.fine),
+      C(fine),
       A(g.plan,"Step 4: a plan plus a small yes. Predictability and a choice hand control back."),
       C(g.go),
       A(ask),
-      C(g.did),
+      C(did),
       A(fix,"Step 5: solve it visibly, in small steps."),
       C(g.better,"This is the turn. The customer softens when they feel heard and see movement."),
       A(g.final(rec),"Recap, apologize once more, and protect them from repeating themselves.")
