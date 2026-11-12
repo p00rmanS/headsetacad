@@ -29,5 +29,8 @@ window.WEEKS=[
  {w:23,phase:"Phase 7: Readiness",title:"Mixed calls under time pressure",topics:"Switching accounts, two problems in one call, pace without rushing. Use the Drill page.",lessons:["r1","r2","r3","r4"]},
  {w:24,phase:"Phase 7: Readiness",title:"Mock QA evaluation",topics:"How QA calibrates, self-review, fixing weak criteria, a full mock week.",lessons:["r5","r6","r7","r8"]},
  {w:25,phase:"Phase 7: Readiness",title:"Final exam",topics:"Written exam on the Exam page, six scored calls, the auto-fail checklist.",lessons:["r9","r10"]},
- {w:26,phase:"Phase 7: Readiness",title:"Interview prep and readiness report",topics:"STAR stories, model answers, first 30 days, the Readiness page.",lessons:["r11","r12","r13","r14"]}
+ {w:26,phase:"Phase 7: Readiness",title:"Interview prep and readiness report",topics:"STAR stories, model answers, first 30 days, the Readiness page.",lessons:["r11","r12","r13","r14"]},
+ {span:"Any time",phase:"Casebooks: read these alongside any week",title:"TSR casebooks: situations and fixes",topics:"Connectivity, Windows and Mac, phones and email, peripherals and POS, network diagnostics, Wi-Fi and mesh, Microsoft 365, outages and incident calls.",lessons:["a22","a23","a24","a25","b22","b23","b24","c17"]},
+ {span:"Any time",phase:"Casebooks: read these alongside any week",title:"CSR casebooks: situations and fixes",topics:"Telecom billing, retail orders, banking and fraud, insurance and appeals, difficult customers, cancellations and retention.",lessons:["d25","d26","d27","d28","d29","d30"]},
+ {span:"Any time",phase:"Casebooks: read these alongside any week",title:"Spanish casebooks: situaciones y soluciones",topics:"Internet y Wi-Fi, computadoras y celulares, facturas, pedidos, banco y seguros, clientes difíciles.",lessons:["e20","e21","e22","e23","e24","e25"]}
 ];

@@ -995,7 +995,7 @@ function viewLesson(id){
   ${l.steps.items.length?`<section style="display:grid;gap:10px"><span class="label">The whole lesson at a glance</span>${flowHTML(l)}</section>`:""}
   <div class="lesson">
    <div class="prose">
-    ${l.teach.map(([h,p])=>`<section><h2>${esc(h)}</h2><p>${esc(p)}</p></section>`).join("")}
+    ${l.teach.map(([h,p])=>`<section><h2>${esc(h)}</h2><p style="white-space:pre-line">${esc(p)}</p></section>`).join("")}
     ${l.legend?legendHTML(l.legend):""}
     ${l.phrases?`<section><h2>Key phrases</h2><div class="tbl-wrap"><table class="phr">${l.phrases.map((p,i)=>`<tr><td>${esc(p[0])}${V()?` <button class="btn sm" data-say="${i}" aria-label="Hear phrase">▶</button>`:""}</td><td class="muted">${esc(p[1])}</td></tr>`).join("")}</table></div></section>`:""}
     ${l.steps.items.length?`<section><h2>${esc(l.steps.h)}</h2><div class="steps">${l.steps.items.map((s,i)=>`<div class="step"><span class="k">${String(i+1).padStart(2,"0")}</span><div><div style="font-weight:600">${esc(s[0])}</div><div class="say">${esc(s[1])}</div></div></div>`).join("")}</div></section>`:""}
